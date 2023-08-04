@@ -65,8 +65,8 @@ function menu() {
                 })
             })
         }
-        if (response.action === "view department") {
-            db.query('SELECT * FROM department', function (err, results) {
+        if (response.action === "view job") {
+            db.query('SELECT * FROM job', function (err, results) {
             console.log(err);  
             console.table(results);
             menu()
@@ -82,12 +82,12 @@ function menu() {
                 {
                     type:"input",
                     name:"salary",
-                    message:"what is the new job salary?", //use more messages for other tables to ask questions regarding the different keys
+                    message:"what is the new job salary? Enter a weekly water quantity", //use more messages for other tables to ask questions regarding the different keys
                 },
                 {
                     type:"input",
                     name:"department_id",
-                    message:"what is the new job department ID?", //use more messages for other tables to ask questions regarding the different keys
+                    message:"what is the new job department ID? Enter a number 1 through 5.", //use more messages for other tables to ask questions regarding the different keys
                 }
             ])
             .then(response => {
@@ -96,6 +96,13 @@ function menu() {
                     console.table(results);
                     menu()
                 })
+            })
+        }
+        if (response.action === "view employee") {
+            db.query('SELECT * FROM employee', function (err, results) {
+            console.log(err);  
+            console.table(results);
+            menu()
             })
         }
         if (response.action === "add employee") {
@@ -108,17 +115,17 @@ function menu() {
                 {
                     type:"input",
                     name:"last_name",
-                    message:"what is the new job salary?", //use more messages for other tables to ask questions regarding the different keys
+                    message:"what is the new job salary? Enter a weekly water quantity", //use more messages for other tables to ask questions regarding the different keys
                 },
                 {
                     type:"input",
                     name:"job_id",
-                    message:"what is the new job department ID?", //use more messages for other tables to ask questions regarding the different keys
+                    message:"what is the new job department ID? Enter a number 1 through 5.", //use more messages for other tables to ask questions regarding the different keys
                 },
                 {
                     type:"input",
                     name:"manager_id",
-                    message:"what is the new job department ID?", //use more messages for other tables to ask questions regarding the different keys
+                    message:"what is the new job department ID? Enter a number 1 through 5.", //use more messages for other tables to ask questions regarding the different keys
                 }
             ])
             .then(response => {
