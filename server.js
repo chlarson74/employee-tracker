@@ -19,7 +19,20 @@ const db = mysql.createConnection(
     password: 'password',
     database: 'employee_db'
   },
-  console.log(`Connected to the employee_db database.`)
+  console.log(`
+
+  ........................................
+
+  |. /|    /.    | .  |. /|    /.    .   /  
+  | V |   /  .   |  . | V |   /  .    . /   
+  |   |  /.....  |  / |   |  /.....   / . 
+  |   | /      . | /  |   | /      . /   .
+                     
+   Connected to the MAD MAX jobs database
+  ........................................
+
+
+  `)
 );
 
 // THE USER is presented with the following options: 
@@ -38,7 +51,7 @@ function menu() {
             type:"list",
             name:"action",
             message:"what would you like to do?",
-            choices:["view department", "view job", "view employee", "add department", "add job","add employee"]
+            choices:["view department", "view job", "view employee", "add department", "delete department", "add job", "delete job", "add employee"]
         }
     )
     .then(response => {
@@ -65,6 +78,33 @@ function menu() {
                 })
             })
         }
+        //deleting a department
+        if (response.action === "delete department") {
+            inquirer
+              .prompt([
+                {
+                  type: "input",
+                  name: "name",
+                  message: "What department should be deleted?",
+                },
+              ])
+              .then((response) => {
+                db.query(
+                  "DELETE FROM department WHERE dept_name = ?",
+                  [response.name],
+                  (err, results) => {
+                    if (err) {
+                      console.log("Error while deleting department:", err);
+                    } else {
+                      console.table(results);
+                    }
+                    menu();
+                  }
+                );
+              });
+          }
+        //end delete function
+
         if (response.action === "view job") {
             db.query('SELECT * FROM job', function (err, results) {
             console.log(err);  
@@ -98,6 +138,32 @@ function menu() {
                 })
             })
         }
+               //deleting a job
+               if (response.action === "delete job") {
+                inquirer
+                  .prompt([
+                    {
+                        type:"input",
+                        name:"title",
+                        message:"what is job title should be removed?",
+                    },
+                  ])
+                  .then((response) => {
+                    db.query(
+                      "DELETE FROM job WHERE title = ?",
+                      [response.name],
+                      (err, results) => {
+                        if (err) {
+                          console.log("Error while deleting job:", err);
+                        } else {
+                          console.table(results);
+                        }
+                        menu();
+                      }
+                    );
+                  });
+              }
+            //end delete function
         if (response.action === "view employee") {
             db.query('SELECT * FROM employee', function (err, results) {
             console.log(err);  
@@ -125,11 +191,11 @@ function menu() {
                 {
                     type:"input",
                     name:"manager_id",
-                    message:"what is the new job department ID? Enter a number 1 through 5.", //use more messages for other tables to ask questions regarding the different keys
+                    message:"who is the new job's manager ID? Enter a number 1 through 5.", //use more messages for other tables to ask questions regarding the different keys
                 }
             ])
             .then(response => {
-                db.query("insert into employee(first_name, last_name, job_id, manager_id) values(?,?,?,?)", [response.first_name, repsonse.last_name, response.employee_id, response.manager_id], (err, results) => {
+                db.query("insert into employee(first_name, last_name, job_id, manager_id) values(?,?,?,?)", [response.first_name, response.last_name, response.job_id, response.manager_id], (err, results) => {
                     console.log(err);  
                     console.table(results);
                     menu()
