@@ -51,7 +51,7 @@ function menu() {
             type:"list",
             name:"action",
             message:"what would you like to do?",
-            choices:["view department", "view job", "view employee", "add department", "delete department", "add job", "delete job", "add employee"]
+            choices:["view department", "view job", "view employee", "add department", "delete department", "add job", "delete job", "add employee", "update employee", "delete employee"]
         }
     )
     .then(response => {
@@ -138,10 +138,10 @@ function menu() {
                 })
             })
         }
-               //deleting a job
-               if (response.action === "delete job") {
-                inquirer
-                  .prompt([
+        //deleting a job
+        if (response.action === "delete job") {
+            inquirer
+            .prompt([
                     {
                         type:"input",
                         name:"title",
@@ -151,7 +151,7 @@ function menu() {
                   .then((response) => {
                     db.query(
                       "DELETE FROM job WHERE title = ?",
-                      [response.name],
+                      [response.title],
                       (err, results) => {
                         if (err) {
                           console.log("Error while deleting job:", err);
@@ -176,22 +176,22 @@ function menu() {
                 {
                     type:"input",
                     name:"first_name",
-                    message:"what is the new job title?", //use more messages for other tables to ask questions regarding the different keys
+                    message:"what is the first name of the new employee?", //use more messages for other tables to ask questions regarding the different keys
                 },
                 {
                     type:"input",
                     name:"last_name",
-                    message:"what is the new job salary? Enter a weekly water quantity", //use more messages for other tables to ask questions regarding the different keys
+                    message:"what is the last name of the new employee", //use more messages for other tables to ask questions regarding the different keys
                 },
                 {
                     type:"input",
                     name:"job_id",
-                    message:"what is the new job department ID? Enter a number 1 through 5.", //use more messages for other tables to ask questions regarding the different keys
+                    message:"what is the new employee's job department ID? Enter a number.", //use more messages for other tables to ask questions regarding the different keys
                 },
                 {
                     type:"input",
                     name:"manager_id",
-                    message:"who is the new job's manager ID? Enter a number 1 through 5.", //use more messages for other tables to ask questions regarding the different keys
+                    message:"who is the new employee's manager ID? Enter a number.", //use more messages for other tables to ask questions regarding the different keys
                 }
             ])
             .then(response => {
@@ -202,98 +202,91 @@ function menu() {
                 })
             })
         }
+        //update an employee
+        if (response.action === "update employee") {
+            inquirer
+              .prompt([
+                {
+                  type: "input",
+                  name: "id",
+                  message: "Enter the ID of the employee you want to update:",
+                },
+                {
+                  type: "input",
+                  name: "first_name",
+                  message: "Enter the new first name:",
+                },
+                {
+                  type: "input",
+                  name: "last_name",
+                  message: "Enter the new last name:",
+                },
+                {
+                  type: "input",
+                  name: "job_id",
+                  message: "Enter the new job department ID (a number):",
+                },
+                {
+                  type: "input",
+                  name: "manager_id",
+                  message: "Enter the new job's manager ID (a number):",
+                },
+              ])
+              .then((response) => {
+                const employeeId = response.id;
+                const newFirstName = response.first_name;
+                const newLastName = response.last_name;
+                const newJobID = response.job_id;
+                const newManagerID = response.manager_id;
+          
+                // Update employee data in the database based on the provided inputs
+                db.query(
+                  "UPDATE employee SET first_name = ?, last_name = ?, job_id = ?, manager_id = ? WHERE id = ?",
+                  [newFirstName, newLastName, newJobID, newManagerID, employeeId],
+                  (err, results) => {
+                    if (err) {
+                      console.log("Error while updating employee:", err);
+                    } else {
+                      console.log("Employee updated successfully.");
+                      console.table(results);
+                    }
+                    menu(); 
+                  }
+                );
+              });
+          }  
+
+       //deleting an employee
+       if (response.action === "delete employee") {
+        inquirer
+        .prompt([
+                {
+                    type:"input",
+                    name:"first_name",
+                    message:"what is the employee's first name that should be removed?",
+                },
+              ])
+              .then((response) => {
+                db.query(
+                  "DELETE FROM employee WHERE first_name = ?",
+                  [response.first_name],
+                  (err, results) => {
+                    if (err) {
+                      console.log("Error while deleting employee:", err);
+                    } else {
+                      console.table(results);
+                    }
+                    menu();
+                  }
+                );
+              });
+          }
+        //end delete function        
     })
 }
-//use same code type for other tables
-
 
 menu()
-// Query database for departments
-// db.query('SELECT * FROM department', function (err, results) {
-//   console.log(err);  
-//   console.log("********* SELECT * FROM department results[0]");
-//   console.log(results);
-//   console.log("*********");
-// });
 
-// db.query('SELECT id, movie_name FROM department', function (err, results) {
-//   console.log("********* SELECT id, movie_name FROM department");
-//   console.log(results);
-//   console.log("*********");
-// });
-
-
-// // Query database for jobs
-// db.query('SELECT * FROM job', function (err, results) {
-//     console.log("********* SELECT * FROM job results[0]");
-//     console.log(results);
-//     console.log("*********");
-//   });
-  
-//   db.query('SELECT movie_id, review FROM job', function (err, results) {
-//     console.log("********* SELECT movie_id, review FROM job");
-//     console.log(results);
-//     console.log("*********");
-//   });
-
-//   // Query database for employees
-// db.query('SELECT * FROM employee', function (err, results) {
-//     console.log("********* SELECT * FROM employee results[0]");
-//     console.log(results);
-//     console.log("*********");
-//   });
-  
-// db.query('SELECT movie_id, review FROM employee', function (err, results) {
-//     console.log("********* SELECT movie_id, review FROM employee");
-//     console.log(results);
-//     console.log("*********");
-//   });
-
-// PUT request for updating a department  
-// app.put('/api/department/:id', (req, res)) => {
-//     const {department} = req.body;
-//     const departmentID = req.params.id
-
-//     db.query('UPDATE department SET department = ? WHERE id = ?', [department, departmentID], (err, result) => {
-//         if(err){
-//             return console.log(err)
-//         }
-//         res.json(results)
-//     })
-// }
-// // PUT request for updating a job  
-// app.put('/api/job/:id', (req, res)) => {
-//     const {job} = req.body;
-//     const jobID = req.params.id
-
-//     db.query('UPDATE job SET department = ? WHERE id = ?', [job, jobID], (err, result) => {
-//         if(err){
-//             return console.log(err)
-//         }
-//         res.json(results)
-//     })
-// }  
-// // PUT request for updating an employee  
-// app.put('/api/employee/:id', (req, res)) => {
-//     const {employee} = req.body;
-//     const employeeID = req.params.id
-
-//     db.query('UPDATE job SET department = ? WHERE id = ?', [employee, employeeID], (err, result) => {
-//         if(err){
-//             return console.log(err)
-//         }
-//         res.json(results)
-//     })
-// }
-
-// Default response for any other request (Not Found)
-// app.use((req, res) => {
-//   res.status(404).end();
-// });
-
-// app.listen(PORT, () => {
-//   console.log(`Server running on port ${PORT}`);
-// });
 //********************************************************* */
 //ACCEPTANCE CRITERIA
 // GIVEN a command-line application that accepts user input
